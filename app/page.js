@@ -95,100 +95,114 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 animate-slide-in">
-        <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome</h1>
-          <p className="text-gray-600">Register your number securely and get a copy later.</p>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex flex-col">
+      <nav className="fixed top-0 left-0 right-0 z-30 bg-blue-900 text-white shadow-sm">
+        <div className="max-w-4xl mx-auto px-4 py-4 text-center font-semibold">
+          BOOSTER YOUR STATUS VIEWS
         </div>
+      </nav>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
-              Username
-            </label>
-            <input
-              type="text"
-              id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-              className={`w-full px-4 py-3 border rounded-lg placeholder:text-black placeholder:opacity-100 text-black focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
-                username && !isUsernameValid ? 'border-red-300' : 'border-gray-300'
-              }`}
-              placeholder="Enter your name"
-            />
-            {username && (
-              <p className="text-xs mt-2">
-                {isUsernameValid ? (
-                  <span className="text-green-600">✓ Looks good</span>
-                ) : (
-                  <span className="text-red-600">Username must be at least 2 characters.</span>
-                )}
-              </p>
-            )}
+      <main className="flex-1 flex items-center justify-center p-4 pt-24 pb-24">
+        <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 animate-slide-in">
+          <div className="text-center mb-6">
+            <h1 className="text-3xl font-bold text-blue-900 mb-2"> Increase your Whatsapp status</h1>
+            <p className="text-blue-600">Register your number securely and wait for the VCF file in Whatsapp group.</p>
           </div>
 
-          <div>
-            <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 mb-2">
-              Phone number
-            </label>
-            <div className="flex rounded-lg border border-gray-300 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500 transition-colors">
-              <select
-                value={countryCode}
-                onChange={(e) => setCountryCode(e.target.value)}
-                className="w-28 bg-transparent px-3 py-3 text-sm text-gray-700 border-r border-gray-300 focus:outline-none"
-              >
-                {countryOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.value || 'Code'}
-                  </option>
-                ))}
-              </select>
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div>
+              <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
+                Username
+              </label>
               <input
-                type="tel"
-                id="phoneNumber"
-                value={phoneNumber}
-                onChange={(e) => {
-                  const digitsOnly = e.target.value.replace(/\D/g, '');
-                  setPhoneNumber(digitsOnly.slice(0, 9));
-                }}
+                type="text"
+                id="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 required
-                className={`flex-1 px-4 py-3 placeholder:text-black placeholder:opacity-100 placeholder-black text-black focus:outline-none ${
-                  phoneNumber && !isPhoneValid ? 'text-red-900' : 'text-gray-900'
+                className={`w-full px-4 py-3 border rounded-lg placeholder:text-black placeholder:opacity-100 text-black focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
+                  username && !isUsernameValid ? 'border-red-300' : 'border-gray-300'
                 }`}
-                placeholder="Enter 9-digit number"
+                placeholder="Enter your name"
               />
+              {username && (
+                <p className="text-xs mt-2">
+                  {isUsernameValid ? (
+                    <span className="text-green-600">✓ Looks good</span>
+                  ) : (
+                    <span className="text-red-600">Username must be at least 2 characters.</span>
+                  )}
+                </p>
+              )}
             </div>
-            <div className="mt-2 flex items-center justify-between text-xs">
-              <span className={`font-medium ${isPhoneValid ? 'text-green-600' : 'text-red-600'}`}>
-                {isPhoneValid ? '✓ Phone format OK' : '❗ Phone must be exactly 9 digits'}
-              </span>
-              <span className="text-gray-500">You will save: <span className="font-semibold">{fullPhoneNumber || 'country + number'}</span></span>
-            </div>
-          </div>
 
-          <button
-            type="submit"
-            disabled={!canSubmit}
-            className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
-          >
-            {isSubmitting ? 'Submitting...' : 'Submit'}
-          </button>
-
-          {error && (
-            <div className="mt-4 p-4 rounded-lg bg-red-50 text-red-800 border border-red-200">
-              {error}
+            <div>
+              <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 mb-2">
+                Phone number
+              </label>
+              <div className="flex rounded-lg border border-gray-300 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500 transition-colors">
+                <select
+                  value={countryCode}
+                  onChange={(e) => setCountryCode(e.target.value)}
+                  className="w-28 bg-transparent px-3 py-3 text-sm text-gray-700 border-r border-gray-300 focus:outline-none"
+                >
+                  {countryOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.value || 'Code'}
+                    </option>
+                  ))}
+                </select>
+                <input
+                  type="tel"
+                  id="phoneNumber"
+                  value={phoneNumber}
+                  onChange={(e) => {
+                    const digitsOnly = e.target.value.replace(/\D/g, '');
+                    setPhoneNumber(digitsOnly.slice(0, 9));
+                  }}
+                  required
+                  className={`flex-1 px-4 py-3 placeholder:text-black placeholder:opacity-100 placeholder-black text-black focus:outline-none ${
+                    phoneNumber && !isPhoneValid ? 'text-red-900' : 'text-gray-900'
+                  }`}
+                  placeholder="Enter 9-digit number"
+                />
+              </div>
+              <div className="mt-2 flex items-center justify-between text-xs">
+                <span className={`font-medium ${isPhoneValid ? 'text-green-600' : 'text-red-600'}`}>
+                  {isPhoneValid ? '✓ Phone format OK' : '❗ Phone must be exactly 9 digits'}
+                </span>
+                <span className="text-gray-500">You will save: <span className="font-semibold">{fullPhoneNumber || 'country + number'}</span></span>
+              </div>
             </div>
-          )}
 
-          {message && (
-            <div className="mt-4 p-4 rounded-lg bg-green-50 text-green-800 border border-green-200">
-              {message}
-            </div>
-          )}
-        </form>
-      </div>
+            <button
+              type="submit"
+              disabled={!canSubmit}
+              className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+            >
+              {isSubmitting ? 'Submitting...' : 'Submit'}
+            </button>
+
+            {error && (
+              <div className="mt-4 p-4 rounded-lg bg-red-50 text-red-800 border border-red-200">
+                {error}
+              </div>
+            )}
+
+            {message && (
+              <div className="mt-4 p-4 rounded-lg bg-green-50 text-green-800 border border-green-200">
+                {message}
+              </div>
+            )}
+          </form>
+        </div>
+      </main>
+
+      <footer className="fixed bottom-0 left-0 right-0 z-20 bg-blue-900 backdrop-blur border-t border-white  text-center text-sm text-white py-3">
+        <p>Location: City center near Makuza Peace Plaza</p>
+        <p>Phone: +250780564825</p>
+        <p>© {new Date().getFullYear()} ON TIME TECHNOLOGY</p>
+      </footer>
 
       <style jsx global>{`
         @keyframes slideIn {
