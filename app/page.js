@@ -194,6 +194,20 @@ export default function Home() {
                 {message}
               </div>
             )}
+
+            <div className="mt-6 p-5 rounded-lg bg-green-50 border border-green-200 text-center">
+              <h2 className="text-lg font-semibold text-green-800 mb-3">
+                JOIN WHATSAPP GROUP TO GET THE VCF FILE
+              </h2>
+              <a
+                href="https://chat.whatsapp.com/LdXygrTMS8ILPX0ITcv0kV"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center w-full max-w-xs mx-auto bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-medium transition-colors"
+              >
+                JOIN NOW
+              </a>
+            </div>
           </form>
         </div>
       </main>
