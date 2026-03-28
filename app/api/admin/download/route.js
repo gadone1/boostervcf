@@ -1,16 +1,37 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '../../../../lib/mongodb';
 import User from '../../../../models/User';
+import Counter from '../../../../models/Counter';
 
 export async function GET() {
   try {
     await dbConnect();
 
-    const users = await User.find({}).sort({ createdAt: -1 });
+    // Find all not-yet-downloaded users (downloadVersion 0)
+    const undownloadedUsers = await User.find({ downloadVersion: 0 }).sort({ createdAt: -1 });
 
-    // Generate VCF content
+    if (undownloadedUsers.length === 0) {
+      return NextResponse.json({ message: 'No new numbers available for download' }, { status: 404 });
+    }
+
+    // Get next download version counter
+    const counter = await Counter.findOneAndUpdate(
+      { name: 'downloadVersion' },
+      { $inc: { value: 1 } },
+      { new: true, upsert: true }
+    );
+
+    const version = counter.value;
+
+    // Assign version to this batch
+    await User.updateMany(
+      { _id: { $in: undownloadedUsers.map((user) => user._id) } },
+      { $set: { downloadVersion: version } }
+    );
+
+    // Generate VCF content for the just-assigned batch
     let vcfContent = '';
-    users.forEach((user) => {
+    undownloadedUsers.forEach((user) => {
       vcfContent += `BEGIN:VCARD\n`;
       vcfContent += `VERSION:3.0\n`;
       vcfContent += `FN:${user.username}\n`;
@@ -20,7 +41,7 @@ export async function GET() {
 
     const res = new NextResponse(vcfContent, { status: 200 });
     res.headers.set('Content-Type', 'text/vcard');
-    res.headers.set('Content-Disposition', 'attachment; filename="contacts.vcf"');
+    res.headers.set('Content-Disposition', `attachment; filename="contacts_v${version}.vcf"`);
 
     return res;
   } catch (error) {

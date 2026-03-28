@@ -42,28 +42,54 @@ export default function Admin() {
   const totalUsers = users.length;
   const todayUsers = chartData[chartData.length - 1]?.value ?? 0;
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      setLoading(true);
-      setError('');
+  const fetchUsers = async () => {
+    setLoading(true);
+    setError('');
 
-      try {
-        const response = await fetch('/api/admin/users');
-        if (response.ok) {
-          const data = await response.json();
-          setUsers(data);
-        } else {
-          setError('Failed to fetch users.');
-        }
-      } catch (err) {
-        setError('Network error occurred.');
-      } finally {
-        setLoading(false);
+    try {
+      const response = await fetch('/api/admin/users');
+      if (response.ok) {
+        const data = await response.json();
+        setUsers(data);
+      } else {
+        setError('Failed to fetch users.');
       }
-    };
+    } catch (err) {
+      setError('Network error occurred.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchUsers();
   }, []);
+
+  const handleDeleteUser = async (id) => {
+    if (!window.confirm('Delete this contact? This action cannot be undone.')) return;
+
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch('/api/admin/users', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
+      });
+
+      if (response.ok) {
+        await fetchUsers();
+      } else {
+        const data = await response.json();
+        setError(data.message || 'Failed to delete user.');
+      }
+    } catch (err) {
+      setError('Network error occurred.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const countryBreakdown = useMemo(() => {
     const counts = {
@@ -97,6 +123,36 @@ export default function Admin() {
     window.open('/api/admin/download', '_blank');
   };
 
+  const downloadDownloadedVCF = () => {
+    window.open('/api/admin/download/downloaded', '_blank');
+  };
+
+  const handleResetDownloaded = async () => {
+    if (!window.confirm('Reset all downloaded contacts to undownloaded status? This will allow them to be downloaded again.')) return;
+
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch('/api/admin/download/reset', {
+        method: 'POST',
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        alert(data.message);
+        await fetchUsers();
+      } else {
+        const data = await response.json();
+        setError(data.message || 'Failed to reset.');
+      }
+    } catch (err) {
+      setError('Network error occurred.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleLogout = () => {
     clearAdminCookie();
     router.push('/');
@@ -104,7 +160,7 @@ export default function Admin() {
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto">
         <div className="bg-white rounded-lg shadow-lg p-6">
           <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between mb-6">
             <div>
@@ -115,13 +171,25 @@ export default function Admin() {
             <div className="flex flex-col gap-3 sm:flex-row">
               <button
                 onClick={downloadVCF}
-                className="w-full sm:w-auto bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium"
+                className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium"
               >
-                Download Contacts (VCF)
+                Download New Contacts (VCF)
+              </button>
+              <button
+                onClick={downloadDownloadedVCF}
+                className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+              >
+                Download Downloaded Contacts (VCF)
+              </button>
+              <button
+                onClick={handleResetDownloaded}
+                className="bg-yellow-600 text-white px-6 py-3 rounded-lg hover:bg-yellow-700 transition-colors font-medium"
+              >
+                Reset Downloaded Status
               </button>
               <button
                 onClick={handleLogout}
-                className="w-full sm:w-auto bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors font-medium"
+                className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors font-medium"
               >
                 Exit Admin
               </button>
@@ -141,7 +209,7 @@ export default function Admin() {
             </div>
           ) : (
             <>
-              <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mb-6">
+              <div className="grid gap-4 md:grid-cols-3 mb-6">
                 <div className="bg-indigo-50 rounded-lg p-5">
                   <div className="text-sm font-medium text-indigo-700">Total users</div>
                   <div className="mt-2 text-3xl font-semibold text-indigo-900">{totalUsers}</div>
@@ -162,9 +230,9 @@ export default function Admin() {
                   <span className="text-xs text-gray-500">Live</span>
                 </div>
 
-                <div className="flex flex-wrap items-end gap-3 h-40">
+                <div className="flex items-end gap-3 h-40">
                   {chartData.map((data) => (
-                    <div key={data.label} className="flex-1 min-w-[60px] flex flex-col items-center">
+                    <div key={data.label} className="flex-1 flex flex-col items-center">
                       <div
                         className="w-full rounded-t-lg bg-indigo-500"
                         style={{ height: `${Math.max(10, data.pct * 100)}%` }}
@@ -200,7 +268,7 @@ export default function Admin() {
               </div>
 
               <div className="overflow-x-auto">
-                <table className="w-full min-w-[540px] table-auto border-collapse">
+                <table className="w-full table-auto border-collapse">
                   <thead>
                     <tr className="bg-gray-50">
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
@@ -210,14 +278,20 @@ export default function Admin() {
                         Phone Number
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
+                        Status
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
                         Registration Date
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
+                        Actions
                       </th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {users.length === 0 ? (
                       <tr>
-                        <td colSpan="3" className="px-6 py-8 text-center text-gray-500">
+                        <td colSpan="5" className="px-6 py-8 text-center text-gray-500">
                           No users found
                         </td>
                       </tr>
@@ -230,6 +304,11 @@ export default function Admin() {
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                             {user.phoneNumber}
                           </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${user.isDownloaded ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
+                              {user.isDownloaded ? 'Downloaded' : 'Not Downloaded'}
+                            </span>
+                          </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             {new Date(user.createdAt).toLocaleDateString('en-US', {
                               year: 'numeric',
@@ -238,6 +317,14 @@ export default function Admin() {
                               hour: '2-digit',
                               minute: '2-digit',
                             })}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <button
+                              onClick={() => handleDeleteUser(user._id)}
+                              className="inline-flex items-center gap-2 px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-xs"
+                            >
+                              Delete
+                            </button>
                           </td>
                         </tr>
                       ))
