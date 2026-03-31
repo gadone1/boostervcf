@@ -29,6 +29,15 @@ export async function POST(request) {
     const cleanedPhone = phoneNumber.replace(/\D/g, '');
     const normalizedPhone = `${countryCode}${cleanedPhone}`;
 
+    // Prevent duplicate phone numbers
+    const existing = await User.findOne({ phoneNumber: normalizedPhone.trim() });
+    if (existing) {
+      return NextResponse.json(
+        { message: 'The phone number is already registered in the file.' },
+        { status: 409 }
+      );
+    }
+
     const user = new User({
       username: username.trim(),
       phoneNumber: normalizedPhone.trim(),
