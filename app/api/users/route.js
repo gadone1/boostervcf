@@ -1,6 +1,7 @@
 ﻿import { NextResponse } from 'next/server';
 import dbConnect from '../../../lib/mongodb';
 import User from '../../../models/User';
+import Counter from '../../../models/Counter';
 
 const allowedCountryCodes = ['+250', '+256', '+254', '+255', '+257'];
 
@@ -38,14 +39,21 @@ export async function POST(request) {
       );
     }
 
+    const counterDoc = await Counter.findOne({ name: 'downloadVersion' });
+    const nextVersion = counterDoc ? counterDoc.value + 1 : 1;
+
+    const cleanName = username.trim().replace(/^V\d+\s*/i, '').trim();
+    const versionedName = `V${nextVersion} ${cleanName}`;
+
     const user = new User({
-      username: username.trim(),
+      username: versionedName,
       phoneNumber: normalizedPhone.trim(),
+      downloadVersion: 0,
     });
 
     await user.save();
 
-    return NextResponse.json({ message: 'User created successfully' }, { status: 201 });
+    return NextResponse.json({ message: 'User created successfully', data: { username: versionedName } }, { status: 201 });
   } catch (error) {
     console.error('Error creating user:', error);
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 });

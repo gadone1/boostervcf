@@ -6,8 +6,8 @@ export async function GET() {
   try {
     await dbConnect();
 
-    // Find all downloaded users
-    const downloadedUsers = await User.find({ isDownloaded: true }).sort({ createdAt: -1 });
+    // Find all downloaded users (versioned)
+    const downloadedUsers = await User.find({ downloadVersion: { $gt: 0 } }).sort({ createdAt: -1 });
 
     // Generate VCF content
     let vcfContent = '';

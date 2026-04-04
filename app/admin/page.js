@@ -278,6 +278,9 @@ export default function Admin() {
                         Phone Number
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
+                        Version
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
                         Status
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
@@ -305,8 +308,11 @@ export default function Admin() {
                             {user.phoneNumber}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${user.isDownloaded ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
-                              {user.isDownloaded ? 'Downloaded' : 'Not Downloaded'}
+                            {user.downloadVersion > 0 ? `V${user.downloadVersion}` : `Pending V${user.username.match(/^V(\d+)/i)?.[1] ?? '1'}`}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${user.downloadVersion > 0 ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
+                              {user.downloadVersion > 0 ? 'Downloaded' : 'Pending Download'}
                             </span>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
