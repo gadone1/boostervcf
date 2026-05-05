@@ -4,11 +4,18 @@ import User from '../../../models/User';
 import Counter from '../../../models/Counter';
 
 const allowedCountryCodes = ['+250', '+256', '+254', '+255', '+257'];
+const phoneLengthByCountryCode = {
+  '+250': 9,
+  '+256': 9,
+  '+254': 9,
+  '+255': 9,
+  '+257': 8,
+};
 
 const isValidPhone = (countryCode, value) => {
   if (!allowedCountryCodes.includes(countryCode)) return false;
   const digits = String(value).replace(/\D/g, '');
-  return digits.length === 9;
+  return digits.length === phoneLengthByCountryCode[countryCode];
 };
 
 export async function POST(request) {
@@ -23,7 +30,7 @@ export async function POST(request) {
 
     if (!isValidPhone(countryCode, phoneNumber)) {
       return NextResponse.json({
-        message: 'Phone number must be 9 digits and country code must be a valid East Africa code',
+        message: 'Phone number length is invalid for the selected country code',
       }, { status: 400 });
     }
 
