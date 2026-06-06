@@ -7,6 +7,7 @@ export default function PhoneNumberForm() {
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [submitted, setSubmitted] = useState(null);
+  const [error, setError] = useState('');
 
   const handleCountryChange = (country) => {
     setSelectedCountry(country);
@@ -14,17 +15,29 @@ export default function PhoneNumberForm() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+    setError('');
+
     if (!selectedCountry || !phoneNumber) {
-      alert('Please select a country and enter a phone number');
+      setError('Please select a country and enter a phone number');
       return;
     }
 
-    const fullPhoneNumber = `${selectedCountry.dialCode}${phoneNumber}`;
+    // Normalize to digits only for length checks
+    const digits = phoneNumber.replace(/\D/g, '');
+
+    // Burundi (code BI, dial +257) expects 8 digits after country code
+    if (selectedCountry.code === 'BI') {
+      if (digits.length !== 8) {
+        setError('Burundi phone numbers must contain exactly 8 digits after the country code');
+        return;
+      }
+    }
+
+    const fullPhoneNumber = `${selectedCountry.dialCode}${digits}`;
     setSubmitted({
       country: selectedCountry.name,
       dialCode: selectedCountry.dialCode,
-      number: phoneNumber,
+      number: digits,
       fullNumber: fullPhoneNumber,
     });
   };
@@ -65,6 +78,9 @@ export default function PhoneNumberForm() {
               className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
+          {error && (
+            <p className="mt-2 text-sm text-red-600">{error}</p>
+          )}
         </div>
 
         {/* Submit Button */}
