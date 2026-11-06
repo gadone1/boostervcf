@@ -326,8 +326,7 @@ export default function Home() {
                 JOIN WHATSAPP GROUP TO GET THE VCF FILE
               </h2>
               <a
-                href="https://chat.whatsapp.com/KSgrwcpX1mY56WskqvHrc4?mode=gi_t
-"
+                href="https://chat.whatsapp.com/BCncr4p3kWG4C9MUvnkOtO?s=cl&p=i&mlu=4&ilr=4&iam=2"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center w-full max-w-xs mx-auto bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-medium transition-colors"
