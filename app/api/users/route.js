@@ -3,8 +3,9 @@ import dbConnect from '../../../lib/mongodb';
 import User from '../../../models/User';
 import Counter from '../../../models/Counter';
 
-const allowedCountryCodes = ['+250', '+256', '+254', '+255', '+257'];
+const allowedCountryCodes = ['+44', '+250', '+256', '+254', '+255', '+257'];
 const phoneLengthByCountryCode = {
+  '+44': 10,
   '+250': 9,
   '+256': 9,
   '+254': 9,
